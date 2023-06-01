@@ -1,7 +1,7 @@
 #include <iostream>
 using std::cin;
 using std::cout;
-using std::string;
+using std::string; 
 
 struct tAlunos{
     int matricula;
