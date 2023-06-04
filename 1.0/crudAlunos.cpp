@@ -8,36 +8,39 @@ struct tAlunos{
     string nome;
     float notas[3];
 };
+
 const short int tam = 3;
+
 int main(){
-    short int op, i = 0, op2, op3;
-    short int matricula;
+
+    short int op, op2, op3, i = 0, matricula;
     bool removido = false, flag, nAchei;
     float nota;
     tAlunos alunos[tam];
-    do{ cout << "\n------------------------------"; 
-        cout << "\n\tMENU PRIMARIO";
-        cout << "\n------------------------------";
-        cout << "\n1-Cadastrar alunos";
+
+    do{ cout << "\n--------------------------------"; 
+        cout << "\n\t  MENU PRIMARIO";
+        cout << "\n--------------------------------"; 
+        cout << "\n\n1-Cadastrar alunos";
         cout << "\n2-Remover alunos";
-        cout << "\n3-Relatorio";
+        cout << "\n3-Listar alunos";
         cout << "\n4-Alterar dados";
         cout << "\n5-Sair\nopcao:";
         cin >> op;
         switch(op){
-            case 1: if(i < tam){
-                        cout << "\n------------------------------";
-                        cout << "\n\t\tCADASTRO";
-                        cout << "\n------------------------------";
+            case 1: cout << "\n--------------------------------"; 
+                    if(i < tam){
+                        cout << "\n\t  CADASTRO";
+                        cout << "\n--------------------------------"; 
                         do{ 
-                            do{ cout << "\nDigite a matricula do aluno: ";
+                            do{ cout << "\n\nDigite a matricula do aluno: ";
                                 cin >> matricula;
                             }while(matricula < 0);//impedir matriculas negativas
                             flag =  false;
                             for(int j = 0; j < i; j++){
                                 if(alunos[j].matricula == matricula) flag = true;
                             }
-                            if(flag) cout << "\nMatricula ja existente, digite novamente!\n";
+                            if(flag) cout << "\nEssa matricula ja existe em nosso sistema, digite novamente!\n";
                             else alunos[i].matricula = matricula;
                         }while(flag);//impedir matriculas iguais
                         cout << "\nDigite o nome do aluno: ";
@@ -48,15 +51,16 @@ int main(){
                                 cin >> alunos[i].notas[j];
                             }while(alunos[i].notas[j] > 10 || alunos[i].notas[j] < 0);
                         }
-                         cout << "------------------------------";
                         i++;
                     }else{
-                        cout << "\nCadastro cheio!";
+                        cout << "\n\nLista de alunos cheia!";
                     }
+                    cout << "\n--------------------------------"; 
                 break;
-            case 2: if(i > 0){
+            case 2: cout << "\n--------------------------------"; 
+                    if(i > 0){ 
                         removido = false;
-                        cout << "\n------------------------------";
+                        cout << "\n--------------------------------"; 
                         cout << "\n\nDigite a matricula do aluno: ";
                         cin >> matricula;
                         for(int j = 0; j < i; j++){
@@ -75,29 +79,30 @@ int main(){
                         }
                         if(removido){
                             i--;
-                            cout << "\nRemocao realizada com sucesso!!\n";
+                            cout << "\nAluno removido com sucesso!!\n";
                         } 
-                        else  cout << "\nMatricula nao  encontrada!\n";
-                        cout << "\n------------------------------";
-                }else cout << "\nNenhum aluno cadastrado no momento!\n";
+                        else  cout << "\n\nA matricula digitada nao foi encontrada!\n";                 
+                    }else cout << "\n\nLista de alunos vazia!\n";
+                    cout << "\n--------------------------------"; 
                 break;
-            case 3: if(i > 0){  
-                        cout << "\n------------------------------";
-                        cout << "\n\tRELATORIO";
-                        cout << "\n------------------------------";
+            case 3: cout << "\n--------------------------------"; 
+                    if(i > 0){  
+                        cout << "\n\t  RELATORIO";
+                        cout << "\n--------------------------------"; 
                         for(int j = 0; j < i; j++){
-                            cout << "\nMatricula do aluno: " << alunos[j].matricula;
+                            cout << "\n\nMatricula do aluno: " << alunos[j].matricula;
                             cout << "\n\nNome do aluno: " << alunos[j].nome;
                             cout << "\n\nNotas: ";
                             for(int k = 0; k < 3; k++){
-                                cout << alunos[j].notas[k] << "\t";
+                                cout << alunos[j].notas[k] << "  ";
                             }
-                            cout << "\n------------------------------";
                         }
-                    }else cout << "\nNenhum aluno cadastrado no momento!\n";
+                    }else cout << "\n\nLista de alunos vazia!\n";
+                    cout << "\n--------------------------------"; 
                 break;
-            case 4: if(i > 0){
-                        cout << "\n------------------------------";
+            case 4: cout << "\n--------------------------------"; 
+                    if(i > 0){ 
+                        cout << "\n--------------------------------"; 
                         cout << "\n\nDigite a matricula do aluno: ";
                         cin >> matricula;
                         nAchei = true;
@@ -105,10 +110,10 @@ int main(){
                             if(matricula == alunos[j].matricula){
                                 nAchei = false;
                                 do{
-                                    cout << "\n------------------------------"; 
-                                    cout << "\n\tMENU SECUNDARIO";
-                                    cout << "\n------------------------------";
-                                    cout << "\n1-Alterar matricula";
+                                    cout << "\n--------------------------------"; 
+                                    cout << "\n\t  MENU SECUNDARIO";
+                                    cout << "\n--------------------------------"; 
+                                    cout << "\n\n1-Alterar matricula";
                                     cout << "\n2-Alterar nome";
                                     cout << "\n3-Alterar notas";
                                     cout << "\n4-Sair\nopcao:";
@@ -123,23 +128,27 @@ int main(){
                                                     for(int j = 0; j < i; j++){
                                                         if(alunos[j].matricula == matricula) flag = true;
                                                     }
-                                                    if(flag) cout << "\nMatricula ja existente, digite novamente!\n";
+                                                    if(flag){ 
+                                                        cout << "\nMatricula ja existente, digite novamente!\n";
+                                                        cout << "\n--------------------------------"; 
+                                                    }
                                                     else alunos[i].matricula = matricula;
                                                 }while(flag);//impedir matriculas iguais
                                             break;
                                         case 2: getchar();
                                                 cout << "\nDigite o novo nome do aluno: ";
                                                 getline(cin, alunos[j].nome);
+                                                cout << "\n--------------------------------"; 
                                             break;
-                                        case 3: cout << "\n------------------------------";
-                                                cout << "\n\tMENU TERCIARIO";
-                                                cout << "\n------------------------------";
-                                                cout << "\n1-Alterar a primeira nota";
+                                        case 3: cout << "\n--------------------------------"; 
+                                                cout << "\n\t  MENU TERCIARIO";
+                                                cout << "\n--------------------------------"; 
+                                                cout << "\n\n1-Alterar a primeira nota";
                                                 cout << "\n2-Alterar a segunda nota";
                                                 cout << "\n3-Alterar a terceira nota";
                                                 cout << "\n4-Sair\nopcao:";
                                                 cin >> op3;
-                                                cout << "\n--------------------------------";
+                                                cout << "\n--------------------------------"; 
                                                 do{cout << "\nDigite a nota: ";
                                                     cin >> nota;
                                                 }while(nota < 0 || nota > 10);
@@ -154,6 +163,7 @@ int main(){
                                                         break;
                                                     default: cout << "\nValor invalido, digite novamente!";                                                     
                                                 }
+                                                cout << "\n--------------------------------"; 
                                             break;
                                         case 4: cout << "\n\nSaindo...";
                                             break;
@@ -162,9 +172,10 @@ int main(){
                                 }while(op2 != 4);
                             }
                         }
-                        if(nAchei) cout << "\n\nMatricula nao encontrada!\n";
-                        else cout << "\n\nAtualizacao realizada com sucesso!\n";
-                    }else cout << "\nNenhum aluno cadastrado no momento!\n";
+                        if(nAchei) cout << "\nA matricula digitada nao foi encontrada!\n";
+                        else cout << "\n\nA atualizacao de dados foi realizada com sucesso!\n";
+                    }else cout << "\n\nLista de alunos vazia!\n";
+                    cout << "\n--------------------------------"; 
                 break;
             case 5: cout << "\nSaindo..."; 
                 break;
