@@ -13,9 +13,9 @@ const short int tam = 3;
 
 int main(){
 
-    fstream arquivo;
-    string aux, linha, nome, linhaAux;
-    short int op, op2, op3, fim = 0, matricula, cont, cont2;
+    fstream arquivo, arquivoTem;
+    string aux, linha, nome, linhaAux, dados = "date.txt" ,dadosTem = "dataTem.txt";
+    short int op, op2, op3, fim = 0, matricula, cont, cont2, cont3, linhaAtual;
     bool removido = false, flag, nAchei;
     float notas[3],nota;
     tAlunos alunos[tam];
@@ -29,88 +29,103 @@ int main(){
         cout << "\n4-Alterar dados";
         cout << "\n5-Sair\nopcao:";
         cin >> op;
-        cout << "\e[H\e[2J";
+        cout << "\e[H\e[2J";//limpando tela
         switch(op){
-            case 1: cout << "\n--------------------------------"; 
-                    if(fim < tam){
-                        cout << "\n\t  CADASTRO";
-                        cout << "\n--------------------------------"; 
-                        arquivo.open("date.txt");                   
-                        do{ cout << "\nDigite a matricula do aluno: ";
-                            cin >> matricula;
-                        }while(matricula < 0);//impedir matriculas negativas
-                        flag =  false;
-                        cont = 0;
-                        aux = to_string(matricula);
-                        while(getline(arquivo,linha)){
-                            cont2 = 0;
-                            while(linha[cont2] != ','){
-                                linhaAux += linha[cont2];
-                                cont2++;
-                            }
-                            if (linhaAux == aux) flag = true;
-                            linhaAux = "";
+            case 1: cout << "\n--------------------------------";                 
+                    cout << "\n\t  CADASTRO";
+                    cout << "\n--------------------------------";                   
+                    do{ cout << "\nDigite a matricula do aluno: ";
+                        cin >> matricula;
+                    }while(matricula < 0);//impedir matriculas negativas
+                    flag =  false;
+                    cont = 0;
+                    aux = to_string(matricula);//convertendo matricula para string
+                    arquivo.open(dados); 
+                    while(getline(arquivo,linha)){
+                        cont2 = 0;
+                        while(linha[cont2] != ','){ //pegando apenas a matricula
+                            linhaAux += linha[cont2];
+                            cont2++;
                         }
-                        arquivo.close();
-                        if(flag) cout << "\nMatricula ja existente, digite novamente!\n";
-                        else{
-                            cout << "\nDigite o nome do aluno: ";
-                            getchar();
-                            getline(cin, nome);
-                            for(int j = 0; j < 3; j++){
-                                do{ cout << "\nDigite a "  << j+1 << "a. nota: ";
-                                    cin >> notas[j];
-                                }while(notas[j] > 10 || notas[j] < 0);
-                            }
-                            cout << "------------------------------";
-                            arquivo.open("date.txt",  ios::app);
-                            arquivo << matricula;
-                            arquivo << ", " << nome << ", ";
-                            arquivo << notas[0] << ", " << notas[1] << ", " << notas[2] << ",\n";
-                            arquivo.close();  
-                            fim++;                       
+                        if (linhaAux == aux) flag = true;//verificando se existe a matricula
+                        linhaAux = "";
+                    }
+                    arquivo.close();
+                    if(flag) cout << "\nMatricula ja existente, digite novamente!\n";
+                    else{
+                        cout << "\nDigite o nome do aluno: ";
+                        getchar();
+                        getline(cin, nome);
+                        for(int j = 0; j < 3; j++){
+                            do{ cout << "\nDigite a "  << j+1 << "a. nota: ";
+                                cin >> notas[j];
+                            }while(notas[j] > 10 || notas[j] < 0);
                         }
-                    }else cout << "\n\nLista de alunos cheia!";                  
+                        cout << "------------------------------";
+                        arquivo.open(dados,  ios::app);
+                        arquivo << matricula;
+                        arquivo << ", " << nome << ", ";
+                        arquivo << notas[0] << ", " << notas[1] << ", " << notas[2] << ",\n";
+                        arquivo.close();  
+                        fim++;                       
+                    }              
                     cout << "\n--------------------------------";
                 break;
             case 2: cout << "\n--------------------------------"; 
-                    if(fim > 0){ 
+                    arquivo.open(dados);
+                    if(arquivo.is_open()){
                         removido = false;
-                        cout << "\n--------------------------------"; 
-                        cout << "\n\nDigite a matricula do aluno: ";
-                        cin >> matricula;
-                        for(int j = 0; j < fim; j++){
-                            flag = false;
-                            if(matricula == alunos[j].matricula){
-                                alunos[j].matricula = -1;
+                        cout << "\n--------------------------------";
+                        do{ cout << "\n\nDigite a matricula do aluno: ";
+                            cin >> matricula;
+                        }while(matricula < 0);
+                        aux = to_string(matricula);
+                        cont3 = 0;//vai armazenar a posição da linha para remover
+                        while(getline(arquivo,linha)){ 
+                            if(!removido){
+                                cont2 = 0;
+                                while(linha[cont2] != ','){
+                                    linhaAux += linha[cont2];
+                                    cont2++;
+                                    cont3++;
+                                }
+                            }
+                            if (linhaAux == aux){
                                 removido = true;
-                                flag = true;
-                            }
-                            if((removido) && (j < fim-1)){
-                                alunos[j].matricula = alunos[j+1].matricula;
-                                alunos[j].nome = alunos[j+1].nome;
-                                if(flag) alunos[j+1].matricula = -1;
-                            }
-
+                            } 
+                            linhaAux = ""; 
                         }
-                        if(removido){
-                            fim--;
-                            cout << "\nAluno removido com sucesso!!\n";
-                        } 
-                        else  cout << "\n\nA matricula digitada nao foi encontrada!\n";                 
+                        arquivo.close();
+                        arquivo.open(dados, ios::in);
+                        arquivoTem.open(dadosTem, ios::out);
+                        linhaAtual = 1;
+                        if(arquivo.is_open() || arquivoTem.is_open()){
+                            while(getline(arquivo, linha)){
+                                if(linhaAtual != cont3){//Não armazenar a linha removida 
+                                    arquivoTem << linha << "\n";
+                                }
+                                linhaAtual++;
+                            }
+                        }
+                        arquivo.close();
+                        arquivoTem.close();
+                        remove(dados.c_str());
+                        rename(dadosTem.c_str(), dados.c_str());//aletarndo o nome do arquivo temporario
+                        if(removido) cout << "\nAluno removido com sucesso!!\n";
+                        else cout << "\nMatricula nao encontrada no sistema!\n";                
                     }else cout << "\n\nLista de alunos vazia!\n";
                     cout << "\n--------------------------------"; 
                 break;
             case 3: flag = true;
                     cout << "\n--------------------------------"; 
-                    arquivo.open("date.txt",  ios::in);
+                    arquivo.open(dados,  ios::in);
                     cont = 0;
                     if(arquivo.is_open()){
                         cout << "\n\t  RELATORIO";
                         cout << "\n--------------------------------"; 
                         while(getline(arquivo,linha)){
                             flag = false;            
-                            for (char ch : linha) {
+                            for (char ch : linha) {//pegando os dados da linha
                                 if (ch != ',')  linhaAux += ch;
                                 else{
                                     cont++;                         
@@ -132,12 +147,12 @@ int main(){
                                     cout << "\n------------------------------";
                                     cont = 0;
                                 } 
-                            }
-                            
+                            }                 
                         }
                         arquivo.close();
                         if(flag) cout << "\nBanco de dados vazio!";
-                    }
+                    }else cout << "\n\nLista de alunos vazia!\n";
+                    cout << "\n--------------------------------"; 
                 break;
             case 4: cout << "\n--------------------------------"; 
                     if(fim > 0){ 
