@@ -11,6 +11,64 @@ struct tAlunos{
 
 const short int tam = 3;
 
+bool verificarUnicidade(string date, string matricula){
+    fstream arq;
+    bool flag = false;
+    string linha, linhaAux;
+    short int cont;
+    arq.open(date);
+     while(getline(arq,linha)){
+        if(!flag){
+            cont = 0;
+            while(linha[cont] != ','){ //pegando apenas a matricula
+                linhaAux += linha[cont];
+                cont++;
+            }
+        }
+        if (linhaAux == matricula) flag = true;//verificando se existe a matricula
+        linhaAux = "";
+    }
+    arq.close();
+    return flag;
+}
+
+void cadastrar(string date, int mat ,string nom, float vet[]){
+    fstream arq;
+    arq.open(date,  ios::app);
+    arq <<  mat;
+    arq << ", " << nom << ", ";
+    arq << vet[0] << ", " << vet[1] << ", " << vet[2] << ",\n";
+    arq.close(); 
+}
+
+int impedirMatriculasNegativas(){
+    int mat;
+    do{ cout << "\nDigite a matricula do aluno: ";
+        cin >> mat;
+    }while(mat < 0);//impedir matriculas negativas
+    return mat;
+}
+
+void remover(string date, string dateTem, int posicao){
+    fstream arq, arqTem;
+    string linha, linhaAux;
+    int atual = 1;
+    arq.open(date, ios::in);
+    arqTem.open(dateTem, ios::out);
+    if(arq.is_open() || arqTem.is_open()){
+        while(getline(arq, linha)){
+            if(atual != posicao){//Não armazenar a linha removida 
+                arqTem << linha << "\n";
+            }
+            atual++;
+        }
+    }
+    arq.close();
+    arqTem.close();
+    remove(date.c_str());
+    rename(dateTem.c_str(), date.c_str());//aletarndo o nome do arquivo temporario
+}
+
 int main(){
 
     fstream arquivo, arquivoTem;
@@ -34,23 +92,9 @@ int main(){
             case 1: cout << "\n--------------------------------";                 
                     cout << "\n\t  CADASTRO";
                     cout << "\n--------------------------------";                   
-                    do{ cout << "\nDigite a matricula do aluno: ";
-                        cin >> matricula;
-                    }while(matricula < 0);//impedir matriculas negativas
-                    flag =  false;
-                    cont = 0;
+                    matricula = impedirMatriculasNegativas();
                     aux = to_string(matricula);//convertendo matricula para string
-                    arquivo.open(dados); 
-                    while(getline(arquivo,linha)){
-                        cont2 = 0;
-                        while(linha[cont2] != ','){ //pegando apenas a matricula
-                            linhaAux += linha[cont2];
-                            cont2++;
-                        }
-                        if (linhaAux == aux) flag = true;//verificando se existe a matricula
-                        linhaAux = "";
-                    }
-                    arquivo.close();
+                    flag = verificarUnicidade(dados,aux);
                     if(flag) cout << "\nMatricula ja existente\n";
                     else{
                         cout << "\nDigite o nome do aluno: ";
@@ -62,11 +106,7 @@ int main(){
                             }while(notas[j] > 10 || notas[j] < 0);
                         }
                         cout << "------------------------------";
-                        arquivo.open(dados,  ios::app);
-                        arquivo <<  matricula;
-                        arquivo << ", " << nome << ", ";
-                        arquivo << notas[0] << ", " << notas[1] << ", " << notas[2] << ",\n";
-                        arquivo.close();  
+                        cadastrar(dados, matricula, nome, notas); 
                         fim++;                       
                     }              
                     cout << "\n--------------------------------";
@@ -76,9 +116,7 @@ int main(){
                     if(arquivo.is_open()){
                         removido = false;
                         cout << "\n--------------------------------";
-                        do{ cout << "\n\nDigite a matricula do aluno: ";
-                            cin >> matricula;
-                        }while(matricula < 0);
+                        matricula = impedirMatriculasNegativas();
                         aux = to_string(matricula);
                         cont3 = 0;//vai armazenar a posição da linha para remover
                         while(getline(arquivo,linha)){ 
@@ -96,21 +134,7 @@ int main(){
                             linhaAux = ""; 
                         }
                         arquivo.close();
-                        arquivo.open(dados, ios::in);
-                        arquivoTem.open(dadosTem, ios::out);
-                        linhaAtual = 1;
-                        if(arquivo.is_open() || arquivoTem.is_open()){
-                            while(getline(arquivo, linha)){
-                                if(linhaAtual != cont3){//Não armazenar a linha removida 
-                                    arquivoTem << linha << "\n";
-                                }
-                                linhaAtual++;
-                            }
-                        }
-                        arquivo.close();
-                        arquivoTem.close();
-                        remove(dados.c_str());
-                        rename(dadosTem.c_str(), dados.c_str());//aletarndo o nome do arquivo temporario
+                        remover(dados, dadosTem, cont3);
                         if(removido) cout << "\nAluno removido com sucesso!!\n";
                         else cout << "\nMatricula nao encontrada no sistema!\n";                
                     }else cout << "\n\nLista de alunos vazia!\n";
@@ -223,23 +247,10 @@ int main(){
                                             cout << "\e[H\e[2J";
 
                                             switch(op2){
-                                                case 1: do{ cout << "\nDigite a nova matricula: ";
-                                                            cin >> matricula;
-                                                        }while(matricula < 0);//impedir matriculas negativas
+                                                case 1: matricula = impedirMatriculasNegativas();
                                                         aux = to_string(matricula);//convertendo matricula para string
                                                         arquivo.close();
-                                                        arquivo.open(dados);
-                                                        flag = false;
-                                                        while(getline(arquivo,linha)){
-                                                            cont2 = 0;
-                                                            while(linha[cont2] != ','){ //pegando apenas a matricula
-                                                                linhaAux += linha[cont2];
-                                                                cont2++;
-                                                            }
-                                                            if (linhaAux == aux)  flag = true;//verificando se existe a matricula
-                                                            linhaAux = "";
-                                                        }
-                                                        arquivo.close();
+                                                        flag = verificarUnicidade(dados,aux);
                                                         if(flag) cout << "\nMatricula ja existente\n"; 
                                                         else{
                                                             matriculaS = aux;
